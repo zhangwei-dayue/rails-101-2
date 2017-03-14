@@ -6,6 +6,11 @@ class PostsController < ApplicationController
     @post = Post.new
   end
 
+  def edit
+    @group = Group.find(params[:group_id])
+    @post = Post.find(params[:id])
+  end
+
   def create
     @group = Group.find(params[:group_id])
     @post = Post.new(post_params)
@@ -17,6 +22,34 @@ class PostsController < ApplicationController
     else
       render :new
     end
+  end
+
+  def update
+    @group = Group.find(params[:group_id])
+    @post = Post.find(params[:id])
+    if current_user == @post.user
+      @post.update(post_params)
+      flash[:alert] = "编辑成功"
+      redirect_to account_posts_path
+    else
+      flash[:alert] = "你没有权限进行编辑操作！"
+      redirect_to account_posts_path
+    end
+  end
+
+
+  def destroy
+    @group = Group.find(params[:group_id])
+    @post = Post.find(params[:id])
+      if current_user == @post.user
+        @post.destroy
+        flash[:alert] = "你已经删除文章！"
+        redirect_to account_posts_path
+      else
+        flash[:alert] = "你没有权限进行删除操作！"
+        redirect_to account_posts_path
+      end
+
   end
 
   private
